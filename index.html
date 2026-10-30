@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TE WEAR — Armure Moderne</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;900&family=Rock+Salt&family=Inter:wght@400;500&display=swap">
+<style>
+/* Mise en page : copie mesurée de la référence. La scène (.stage) fait 1188 × 700 dans la maquette ;
+   tout y est placé en % et dimensionné avec --u (voir .stage), donc ça garde les proportions à toutes les tailles. */
+:root{
+  color-scheme:dark;
+  --bg:#141215;
+  --fg:#efedf0;
+  --nav:#c6c3c8;
+  --muted:#8f8b92;
+  --purple:#6d1fa0;
+  --glow:rgba(110,35,160,.42);
+  --f-display:"Big Shoulders Display","Bebas Neue","Arial Narrow",sans-serif;
+  --f-script:"Rock Salt","Segoe Print",cursive;
+  --f-body:"Inter","Segoe UI",system-ui,sans-serif;
+  --mx:52%;--my:62%;   /* position du projecteur, suit la souris */
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body)}
+
+/* Le hero fait exactement la taille de l'écran, quelle que soit sa forme. */
+.page{position:relative;height:100vh;height:100dvh;min-height:560px;display:flex;flex-direction:column;overflow:hidden;
+  padding-top:clamp(16px,3vh,36px);padding-bottom:clamp(16px,3.2vh,36px);
+  padding-left:max(18px,env(safe-area-inset-left,0px),4.5vw);
+  padding-right:max(18px,env(safe-area-inset-right,0px),4.5vw);
+  background:
+    radial-gradient(30% 34% at 92% 108%,var(--glow),transparent 72%),
+    radial-gradient(40% 50% at var(--mx) var(--my),rgba(96,92,98,.6),rgba(58,55,60,.3) 45%,transparent 75%),
+    radial-gradient(90% 70% at 50% 0%,#1f1d21,transparent 70%),
+    var(--bg);
+  transition:background-position .3s}
+/* grain très léger, comme une photo */
+body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* NAV */
+.nav{position:relative;z-index:10;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:#d4d1d6;font:700 clamp(19px,1.75vw,25px)/1 var(--f-display);letter-spacing:.01em}
+.logo img{width:clamp(24px,2.1vw,30px);height:auto;display:block;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.logo:hover img{transform:rotate(-14deg) scale(1.08)}
+.links{display:flex;gap:clamp(22px,2.6vw,38px)}
+.links a{position:relative;color:var(--nav);text-decoration:none;font-size:clamp(14px,1.2vw,17px);transition:color .2s}
+.links a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;background:var(--fg);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.links a:hover{color:#fff}.links a:hover::after{transform:scaleX(1)}
+.pre-btn{justify-self:end;font:500 clamp(14px,1.2vw,17px) var(--f-body);color:#fff;background:rgba(48,46,50,.85);border:1px solid #a9a6ad;border-radius:8px;padding:.55em 1.1em;cursor:pointer;transition:background .25s,border-color .25s,transform .25s}
+.pre-btn:hover{background:var(--purple);border-color:#b98be0}
+
+/* SCÈNE */
+/* La scène occupe toute la place sous le menu. --u = 1 % de la maquette (1188 × 700) :
+   on prend la plus petite échelle entre la largeur et la hauteur, donc rien ne déborde. */
+.stage{position:relative;container-type:size;flex:1;min-height:0;width:100%;margin-top:clamp(10px,3vh,40px);
+  --u:min(1cqw,1.697cqh)}
+.giant{position:absolute;left:-.4cqw;right:-.4cqw;top:calc(50% + (5.89 - 29.46)*var(--u));margin:0;display:flex;justify-content:space-between;
+  font:900 31.5cqw/.74 var(--f-display);letter-spacing:-.005em;text-transform:uppercase;user-select:none;
+  background:linear-gradient(180deg,#5d5b5f 0%,#545256 38%,#3d3b3f 62%,rgba(30,28,31,.05) 86%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;will-change:transform}
+.jacket{position:absolute;left:52.3%;top:calc(50% + (1.77 - 29.46)*var(--u));width:calc(82*var(--u));transform:translateX(-50%);z-index:2;will-change:transform;cursor:grab;touch-action:pan-y}
+.jacket.drag{cursor:grabbing}
+.jacket video{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.jacket canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;filter:drop-shadow(0 calc(3*var(--u)) calc(3*var(--u)) rgba(0,0,0,.6))}
+.hint{position:absolute;left:52.3%;top:calc(50% + (53.62 - 29.46)*var(--u));transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:.6em;white-space:nowrap;
+  font:500 max(11px,calc(.95*var(--u))) var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:opacity .5s}
+.hint i{display:block;width:3.2em;height:1px;background:currentColor;opacity:.6}
+.script{position:absolute;z-index:3;margin:0;font:400 calc(6.5*var(--u))/1 var(--f-script);color:var(--purple);
+  -webkit-text-stroke:calc(.16*var(--u)) var(--purple);text-shadow:0 calc(.4*var(--u)) calc(1.6*var(--u)) rgba(0,0,0,.35);white-space:nowrap;pointer-events:none}
+.script.l{left:0;top:calc(50% + (24.45 - 29.46)*var(--u))}
+.script.r{right:0;top:calc(50% + (24.45 - 29.46)*var(--u))}
+.hand{position:absolute;z-index:3;left:0;top:calc(50% + (34.47 - 29.46)*var(--u));margin:0;font:400 calc(2.75*var(--u))/1 var(--f-script);color:#f1eff2;white-space:nowrap;-webkit-text-stroke:calc(.03*var(--u)) #f1eff2}
+.intro{position:absolute;z-index:3;left:0;top:calc(50% + (46.55 - 29.46)*var(--u));width:calc(21*var(--u))}
+.intro h2,.excl h2{margin:0;font:700 calc(2.35*var(--u))/1.02 var(--f-display);letter-spacing:.01em;text-transform:uppercase;color:#ebe9ec}
+.intro p{margin:calc(1.1*var(--u)) 0 0;color:var(--muted);font-size:max(12px,calc(1.3*var(--u)));line-height:1.42}
+.excl{position:absolute;z-index:3;right:0;top:calc(50% + (40.07 - 29.46)*var(--u));width:calc(14.6*var(--u));padding:calc(2.3*var(--u)) calc(2.3*var(--u)) calc(2.4*var(--u));border-radius:calc(1.4*var(--u));
+  background:rgba(33,31,34,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 0 0 1px rgba(255,255,255,.035) inset,0 calc(2*var(--u)) calc(4*var(--u)) rgba(0,0,0,.35);transition:transform .35s,box-shadow .35s}
+.excl:hover{transform:translateY(calc(-.5*var(--u)));box-shadow:0 0 0 1px rgba(185,139,224,.35) inset,0 calc(2.4*var(--u)) calc(5*var(--u)) rgba(0,0,0,.45)}
+.excl p{margin:calc(1.1*var(--u)) 0 calc(2.4*var(--u));color:var(--muted);font-size:max(10.5px,calc(1.05*var(--u)));line-height:1.38}
+.excl a{display:flex;align-items:center;gap:calc(.9*var(--u));color:#d9d6db;text-decoration:none;font-size:max(11px,calc(1.15*var(--u)))}
+.excl a span{width:calc(2*var(--u));height:calc(2*var(--u));min-width:20px;min-height:20px;border:1px solid #87838a;border-radius:50%;display:grid;place-items:center;transition:background .25s,border-color .25s}
+.excl a span svg{width:55%;height:55%}
+.excl a:hover span{background:var(--purple);border-color:var(--purple)}
+:focus-visible{outline:2px solid #b98be0;outline-offset:3px}
+
+/* Entrée : le grand mot monte, la veste apparaît, l'écriture se trace de gauche à droite */
+@media (prefers-reduced-motion:no-preference){
+  .giant{animation:up 1.1s cubic-bezier(.2,.7,.1,1) both}
+  .jacket canvas{animation:appear 1.2s .25s cubic-bezier(.2,.7,.1,1) both}
+  .script,.hand{animation:write 1.1s cubic-bezier(.6,.1,.3,1) both}
+  .script.l{animation-delay:.7s}.script.r{animation-delay:.95s}.hand{animation-delay:1.25s}
+  .intro,.excl,.hint{animation:fade .8s 1.4s both}
+  @keyframes up{from{transform:translateY(calc(6*var(--u)));opacity:0}}
+  @keyframes appear{from{transform:scale(.92) translateY(calc(2*var(--u)));opacity:0}}
+  @keyframes write{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% -5% -20% 0)}}
+  @keyframes fade{from{opacity:0;transform:translateY(calc(1*var(--u)))}}
+}
+
+/* Téléphone : on empile */
+@media (max-width:820px){
+  .page{height:auto;min-height:100dvh}
+  .nav{grid-template-columns:1fr auto}
+  .links{display:none}
+  .stage{aspect-ratio:auto;display:flex;flex-direction:column;margin-top:28px;container-type:normal}
+  .giant{position:relative;top:auto;left:auto;right:auto;font-size:26vw}
+  .jacket{position:relative;left:50%;top:auto;width:150vw;margin:-27vw 0 -12vw}
+  .hint{position:relative;left:auto;top:auto;transform:none;align-self:center;font-size:11px;margin-bottom:18px}
+  .script,.hand,.intro,.excl{position:relative;inset:auto;width:auto}
+  .script{font-size:11.5vw;-webkit-text-stroke:.3vw var(--purple)}
+  .script.r{align-self:flex-end;margin-top:1vw}
+  .hand{font-size:5.2vw;margin:5vw 0 9vw}
+  .intro h2,.excl h2{font-size:26px}
+  .intro p{margin-top:10px;font-size:14px}
+  .intro{margin-bottom:22px}
+  .excl{padding:20px;border-radius:16px;max-width:300px}
+  .excl p{margin:10px 0 18px;font-size:13px}
+  .excl a{gap:10px;font-size:14px}
+}
+
+/* ================= SECTIONS SOUS LE HERO ================= */
+.wrap{padding-left:max(18px,env(safe-area-inset-left,0px),4.5vw);padding-right:max(18px,env(safe-area-inset-right,0px),4.5vw)}
+.sec{position:relative;padding-block:clamp(70px,11vw,150px)}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:clamp(30px,4vw,56px)}
+.title{position:relative;margin:0;font:900 clamp(56px,9vw,150px)/.82 var(--f-display);text-transform:uppercase;letter-spacing:-.005em;
+  background:linear-gradient(180deg,#e9e7ea 0%,#9d9aa0 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kicker{margin:0 0 10px .05em;font:400 clamp(20px,2.2vw,34px)/1.2 var(--f-script);color:var(--purple);-webkit-text-stroke:1px var(--purple);transform:rotate(-3deg);transform-origin:left bottom}
+.lede{max-width:40ch;margin:0;color:var(--muted);font-size:clamp(15px,1.15vw,17px);line-height:1.6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6em;font:600 16px var(--f-body);color:#fff;background:var(--purple);border:0;border-radius:10px;padding:16px 26px;cursor:pointer;text-decoration:none;transition:background .25s,transform .25s}
+.btn:hover{background:#8530bd;transform:translateY(-2px)}
+.btn.ghost{background:transparent;border:1px solid #6d6970}
+.btn.ghost:hover{border-color:#fff;background:rgba(255,255,255,.04)}
+
+/* Halos de lumière derrière certaines sections */
+.halo{position:absolute;z-index:-1;width:60vw;height:60vw;max-width:900px;max-height:900px;border-radius:50%;pointer-events:none;filter:blur(20px)}
+.halo.p{background:radial-gradient(closest-side,rgba(109,31,160,.20),transparent)}
+.halo.o{background:radial-gradient(closest-side,rgba(217,132,58,.10),transparent)}
+main{position:relative;z-index:0;overflow-x:clip}
+
+/* Menu en verre qui apparaît quand on quitte le hero */
+.topbar{position:fixed;z-index:50;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,-140%);width:min(1100px,calc(100% - 28px));
+  display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 10px 10px 18px;border-radius:16px;
+  background:rgba(24,22,26,.62);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+  box-shadow:0 0 0 1px rgba(255,255,255,.07) inset,0 20px 50px rgba(0,0,0,.45);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.topbar.show{transform:translate(-50%,0)}
+.topbar .links a{font-size:15px}
+.topbar .pre-btn{background:var(--purple);border-color:var(--purple);font-size:15px;padding:.6em 1.1em;text-decoration:none}
+.topbar .pre-btn:hover{background:#8530bd}
+@media (max-width:820px){.topbar .links{display:none}}
+
+/* Bande défilante */
+.band{position:relative;overflow:hidden;border-block:1px solid #2a272c;background:#0f0e10;padding-block:18px}
+.band-track{display:flex;width:max-content;gap:48px;animation:band 30s linear infinite}
+.band span{display:flex;align-items:center;gap:48px;white-space:nowrap;font:700 clamp(18px,1.8vw,26px)/1 var(--f-display);letter-spacing:.06em;text-transform:uppercase;color:#cfccd2}
+.band img{width:26px;height:26px}
+.band em{font:400 .9em var(--f-script);color:var(--purple);font-style:normal;letter-spacing:0;text-transform:none}
+@keyframes band{to{transform:translateX(-50%)}}
+
+/* La pièce */
+.piece{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(24px,4vw,70px);align-items:center}
+.piece-stage{position:relative;aspect-ratio:16/11;border-radius:28px;overflow:hidden;
+  background:radial-gradient(55% 60% at 50% 55%,#3a363b,#1a181b 70%),#1a181b;box-shadow:0 0 0 1px #2a272c inset}
+.piece-stage .ghostword{position:absolute;inset:auto 0 50%;transform:translateY(50%);text-align:center;font:900 clamp(90px,15vw,250px)/.8 var(--f-display);color:rgba(255,255,255,.045);user-select:none}
+.piece-stage .cut{position:absolute;left:50%;top:50%;width:118%;transform:translate(-50%,-50%);cursor:grab;touch-action:pan-y}
+.piece-stage .cut.drag{cursor:grabbing}
+.piece-stage .badge{position:absolute;left:22px;top:22px;font:500 12px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:#d8d5da;background:rgba(20,18,21,.7);border:1px solid #39353b;border-radius:999px;padding:7px 12px;backdrop-filter:blur(6px)}
+.piece-info{min-width:0}
+.piece-info .kicker{transform:none;font:400 clamp(22px,2.2vw,32px)/1 var(--f-script);color:var(--purple);-webkit-text-stroke:1px var(--purple);margin:0 0 14px}
+.piece-info h2{margin:0;font:900 clamp(48px,5.6vw,92px)/.86 var(--f-display);text-transform:uppercase}
+.price{display:flex;align-items:baseline;gap:14px;margin:18px 0 26px;font:700 clamp(30px,2.6vw,40px)/1 var(--f-display)}
+.price s{font-size:.6em;color:#6f6b72}
+.price small{font:500 13px var(--f-body);color:#c9a6e6;background:rgba(109,31,160,.22);border-radius:999px;padding:5px 10px;align-self:center}
+.opt-label{display:flex;justify-content:space-between;font:500 13px var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.opt-label b{color:#e6e3e8;font-weight:500;letter-spacing:.04em;text-transform:none}
+.swatches,.sizes{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.sw{width:46px;height:46px;border-radius:50%;border:2px solid transparent;padding:4px;background:none;cursor:pointer;transition:border-color .2s}
+.sw i{display:block;width:100%;height:100%;border-radius:50%;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
+.sw[aria-pressed="true"]{border-color:#e6e3e8}
+.size{min-width:56px;height:46px;border-radius:10px;border:1px solid #3a363c;background:#1b191c;color:#e6e3e8;font:600 15px var(--f-body);cursor:pointer;transition:border-color .2s,background .2s}
+.size:hover{border-color:#8a868d}
+.size[aria-pressed="true"]{background:#e6e3e8;color:#141215;border-color:#e6e3e8}
+.stock{margin:4px 0 26px}
+.stock-bar{height:6px;border-radius:999px;background:#2a272c;overflow:hidden}
+.stock-bar i{display:block;height:100%;width:71.3%;border-radius:inherit;background:linear-gradient(90deg,var(--purple),#b06be0)}
+.stock p{display:flex;justify-content:space-between;margin:10px 0 0;font-size:14px;color:var(--muted)}
+.stock p b{color:#e6e3e8;font-weight:600}
+.buy{display:flex;gap:12px;flex-wrap:wrap}
+.buy .btn{flex:1 1 220px}
+.ship{margin:16px 0 0;font-size:13.5px;color:var(--muted)}
+
+/* Détails */
+.details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.6vw,24px)}
+.detail{position:relative;margin:0;border-radius:22px;overflow:hidden;aspect-ratio:3/4;background:#1a181b}
+.detail img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s cubic-bezier(.2,.7,.1,1)}
+.detail:hover img{transform:scale(1.07)}
+.detail figcaption{position:absolute;inset:auto 0 0;padding:70px 22px 22px;background:linear-gradient(transparent,rgba(10,9,11,.85))}
+.detail h3{margin:0;font:800 clamp(24px,2.2vw,34px)/1 var(--f-display);text-transform:uppercase}
+.detail p{margin:6px 0 0;color:#c3bfc6;font-size:14.5px;line-height:1.5;max-width:32ch}
+
+/* Collection */
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.6vw,24px)}
+.prod{position:relative;border-radius:22px;overflow:hidden;background:radial-gradient(70% 60% at 50% 45%,#2f2c31,#18161a 75%);box-shadow:0 0 0 1px #29262b inset;transition:transform .4s,box-shadow .4s}
+.prod::after{content:"";position:absolute;inset:auto 10% -40% 10%;height:60%;background:radial-gradient(closest-side,rgba(109,31,160,.45),transparent);opacity:0;transition:opacity .5s;pointer-events:none}
+.prod:hover::after{opacity:1}
+.prod:hover{transform:translateY(-6px);box-shadow:0 0 0 1px #5a3f70 inset,0 30px 60px rgba(0,0,0,.4)}
+.chip{position:absolute;left:22px;top:18px;z-index:2;font:600 11px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:#141215;background:#d9843a;border-radius:999px;padding:5px 10px}
+.prod .media{position:relative;aspect-ratio:4/4.3;overflow:hidden}
+.prod .cut{position:absolute;left:50%;top:48%;width:150%;transform:translate(-50%,-50%)}
+.prod-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:0 22px 22px}
+.prod h3{margin:0;font:800 clamp(24px,2vw,30px)/1 var(--f-display);text-transform:uppercase}
+.prod p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.prod .add{flex:none;width:46px;height:46px;border-radius:50%;border:1px solid #514c55;background:transparent;color:#fff;font-size:22px;line-height:1;cursor:pointer;transition:background .25s,border-color .25s}
+.prod .add:hover,.prod .add.ok{background:var(--purple);border-color:var(--purple)}
+.prod .num{position:absolute;right:22px;top:20px;font:700 14px var(--f-display);letter-spacing:.1em;color:#6f6b72}
+
+/* Lookbook */
+.look{display:grid;align-items:stretch;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:clamp(12px,1.6vw,24px)}
+.shot{position:relative;margin:0;border-radius:24px;overflow:hidden;background:#111}
+.shot video{display:block;width:100%;height:100%;object-fit:cover}
+.shot.wide{min-height:100%}
+.shot.wide video{position:absolute;inset:0}
+.shot.tall{aspect-ratio:16/10}
+.shot figcaption{position:absolute;left:22px;bottom:20px;right:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.shot figcaption span{font:400 clamp(20px,2vw,30px)/1 var(--f-script);color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.6)}
+.shot figcaption small{font:500 12px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:#e2dfe4;background:rgba(20,18,21,.6);border-radius:999px;padding:6px 11px;backdrop-filter:blur(6px)}
+.look-side{display:grid;gap:clamp(12px,1.6vw,24px);grid-template-rows:auto 1fr}
+.quote{border-radius:24px;background:#1b191c;box-shadow:0 0 0 1px #29262b inset;padding:clamp(22px,2.4vw,36px);display:flex;flex-direction:column;justify-content:space-between;gap:20px}
+.quote p{margin:0;font:800 clamp(26px,2.6vw,42px)/.98 var(--f-display);text-transform:uppercase}
+.quote p em{font:400 .8em var(--f-script);color:var(--purple);font-style:normal;text-transform:none}
+
+/* Concept */
+.concept{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,90px);align-items:center}
+.ball-stage{position:relative;overflow:hidden;border-radius:50%;aspect-ratio:1;max-width:620px;width:100%;justify-self:center}
+.ball-stage::before{content:"";position:absolute;inset:12%;border-radius:50%;background:radial-gradient(closest-side,rgba(217,132,58,.28),transparent 70%);filter:blur(10px)}
+.ball-stage .cut{position:absolute;left:50%;top:50%;width:178%;transform:translate(-50%,-50%)}
+.concept h2{margin:0 0 22px;font:900 clamp(48px,5.4vw,88px)/.86 var(--f-display);text-transform:uppercase}
+.concept h2 em{font:400 .62em var(--f-script);color:var(--purple);-webkit-text-stroke:1px var(--purple);font-style:normal;text-transform:none}
+.concept p{margin:0 0 16px;color:#bdb9c0;font-size:clamp(15px,1.2vw,18px);line-height:1.65;max-width:52ch}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:30px}
+.facts div{border-top:1px solid #343036;padding-top:14px}
+.facts b{display:block;font:800 clamp(30px,3vw,46px)/1 var(--f-display)}
+.facts span{font-size:13.5px;color:var(--muted)}
+
+/* Liste d'attente + pied de page */
+.join{position:relative;overflow:hidden;border-radius:32px;margin-bottom:clamp(40px,6vw,80px);padding:clamp(40px,6vw,90px) clamp(22px,5vw,80px);
+  background:radial-gradient(60% 90% at 85% 100%,rgba(109,31,160,.55),transparent 70%),radial-gradient(50% 80% at 10% 0%,#2a272c,transparent 70%),#18161a;box-shadow:0 0 0 1px #2c2830 inset}
+.join h2{margin:0;font:900 clamp(48px,7vw,120px)/.84 var(--f-display);text-transform:uppercase;max-width:12ch}
+.join p{margin:18px 0 28px;color:#c7c3ca;max-width:46ch;font-size:clamp(15px,1.2vw,18px);line-height:1.6}
+.join form{display:flex;gap:10px;flex-wrap:wrap;max-width:560px}
+.join input{flex:1 1 240px;min-width:0;height:56px;border-radius:10px;border:1px solid #4a4550;background:rgba(15,14,16,.7);color:#fff;font:400 16px var(--f-body);padding:0 18px}
+.join input::placeholder{color:#807b84}
+.join input:focus{outline:2px solid #b98be0;outline-offset:1px}
+.join .btn{height:56px}
+.join .msg{min-height:1.4em;margin:12px 0 0;font-size:14px;color:#d6b7f0}
+.join .ball-deco{position:absolute;right:clamp(-60px,-2vw,0px);top:50%;width:clamp(160px,24vw,360px);transform:translateY(-50%) rotate(-12deg);opacity:.95;filter:drop-shadow(0 30px 40px rgba(0,0,0,.5))}
+footer.foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding-block:28px 40px;border-top:1px solid #29262b;color:var(--muted);font-size:14px}
+footer.foot nav{display:flex;gap:22px;flex-wrap:wrap}
+footer.foot a{color:var(--muted);text-decoration:none}
+footer.foot a:hover{color:#fff}
+
+/* Apparition au défilement */
+.js .rv{opacity:0;transform:translateY(40px);transition:opacity .9s cubic-bezier(.2,.7,.1,1),transform .9s cubic-bezier(.2,.7,.1,1)}
+.js .rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.js .rv{opacity:1;transform:none}.band-track{animation:none}}
+
+@media (max-width:980px){
+  .piece,.concept{grid-template-columns:1fr}
+  .look{grid-template-columns:1fr}
+  .details,.grid3{grid-template-columns:1fr 1fr}
+  .details .detail:last-child,.grid3 .prod:last-child{grid-column:1/-1;aspect-ratio:auto}
+  .details .detail:last-child{aspect-ratio:16/10}
+}
+@media (max-width:600px){
+  .details,.grid3,.facts{grid-template-columns:1fr}
+  .details .detail:last-child{aspect-ratio:3/4}
+  .join .ball-deco{display:none}
+  .title .tag{bottom:-.5em}
+}
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js')</script>
+<div class="topbar" id="topbar" aria-hidden="true">
+  <a class="logo" href="#page" tabindex="-1"><img src="logo.png" alt="">TE WEAR</a>
+  <nav class="links"><a href="#collection" tabindex="-1">Collection</a><a href="#concept" tabindex="-1">Concept</a><a href="#editos" tabindex="-1">Éditos</a><a href="#lookbook" tabindex="-1">Lookbook</a></nav>
+  <a class="pre-btn" href="#piece" tabindex="-1">Précommander</a>
+</div>
+<main>
+<section class="page" id="page">
+  <header class="nav">
+    <a class="logo" href="#page"><img src="logo.png" alt="">TE WEAR</a>
+    <nav class="links" aria-label="Menu">
+      <a href="#collection">Collection</a><a href="#concept">Concept</a><a href="#editos">Éditos</a><a href="#lookbook">Lookbook</a>
+    </nav>
+    <a class="pre-btn" href="#piece" style="text-decoration:none">Précommander</a>
+  </header>
+
+  <div class="stage" id="stage">
+    <h1 class="giant" id="giant" aria-label="TE WEAR"><span>TE</span><span>WEAR</span></h1>
+    <div class="jacket" id="jacket">
+      <!-- Chaque vidéo est sur fond noir : le script la redessine dans le canvas en rendant le noir transparent. -->
+      <video id="vid" src="veste-nuit.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+      <canvas id="cv" width="640" height="360" role="img" aria-label="Veste à capuche TE, bleu nuit et sable. Glisse pour la faire tourner."></canvas>
+    </div>
+    <p class="script l">Armure</p>
+    <p class="script r">Moderne</p>
+    <p class="hand">Créée pour toi.</p>
+    <div class="hint" id="hint"><i></i>Glisse pour tourner<i></i></div>
+    <div class="intro">
+      <h2>Précommandes limitées</h2>
+      <p>La veste nouvelle génération, pensée pour ton confort et ton style unique.</p>
+    </div>
+    <aside class="excl">
+      <h2>L'exclu<br>du mois</h2>
+      <p>Précommande maintenant et profite du prix exclusif de ce mois.</p>
+      <a href="#piece">Voir plus <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></span></a>
+    </aside>
+  </div>
+</section>
+
+<div class="band" aria-hidden="true">
+  <div class="band-track">
+    <span>Armure moderne <img src="logo.png" alt=""> Précommandes ouvertes <img src="logo.png" alt=""> 300 pièces numérotées <img src="logo.png" alt=""> <em>créée pour toi</em> <img src="logo.png" alt=""></span>
+    <span>Armure moderne <img src="logo.png" alt=""> Précommandes ouvertes <img src="logo.png" alt=""> 300 pièces numérotées <img src="logo.png" alt=""> <em>créée pour toi</em> <img src="logo.png" alt=""></span>
+  </div>
+</div>
+
+<!-- LA PIÈCE -->
+<section class="sec wrap" id="piece">
+  <div class="halo p" style="left:-20vw;top:10%"></div>
+  <div class="piece">
+    <div class="piece-stage rv">
+      <div class="ghostword" aria-hidden="true">ARMURE</div>
+      <canvas class="cut" id="pieceCut" data-src="veste-nuit.mp4" data-drag width="640" height="360" role="img" aria-label="Veste Armure 01 qui tourne. Glisse pour la faire tourner."></canvas>
+      <span class="badge">Glisse pour tourner</span>
+    </div>
+    <div class="piece-info rv">
+      <p class="kicker">La pièce</p>
+      <h2>Veste<br>Armure 01</h2>
+      <div class="price">189 € <s>229 €</s><small>Prix de lancement</small></div>
+      <p class="opt-label">Coloris <b id="colorName">Nuit</b></p>
+      <div class="swatches" role="group" aria-label="Coloris">
+        <button class="sw" type="button" aria-pressed="true" data-src="veste-nuit.mp4" data-name="Nuit" aria-label="Nuit"><i style="background:linear-gradient(135deg,#1d2233 55%,#c9b48f 55%)"></i></button>
+        <button class="sw" type="button" aria-pressed="false" data-src="veste-sable.mp4" data-name="Sable" aria-label="Sable"><i style="background:linear-gradient(135deg,#cdbb98 55%,#1c1c1e 55%)"></i></button>
+        <button class="sw" type="button" aria-pressed="false" data-src="veste-creme.mp4" data-name="Crème" aria-label="Crème"><i style="background:linear-gradient(135deg,#e2d6bd 55%,#b7a582 55%)"></i></button>
+      </div>
+      <p class="opt-label">Taille <b id="sizeName">M</b></p>
+      <div class="sizes" role="group" aria-label="Taille">
+        <button class="size" type="button" aria-pressed="false">S</button>
+        <button class="size" type="button" aria-pressed="true">M</button>
+        <button class="size" type="button" aria-pressed="false">L</button>
+        <button class="size" type="button" aria-pressed="false">XL</button>
+      </div>
+      <div class="stock">
+        <div class="stock-bar"><i></i></div>
+        <p><span><b>214</b> / 300 pièces réservées</span><span>Fin le 30 novembre</span></p>
+      </div>
+      <div class="buy">
+        <button class="btn" type="button" id="preorder">Précommander · 189 €</button>
+        <a class="btn ghost" href="#editos">Voir les détails</a>
+      </div>
+      <p class="ship">Livraison prévue en janvier. Retours gratuits sous 30 jours.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ÉDITOS : LES DÉTAILS -->
+<section class="sec wrap" id="editos" style="padding-top:0">
+  <div class="head">
+    <div class="rv"><p class="kicker">fait pour durer</p><h2 class="title">Dans le<br>détail</h2></div>
+    <p class="lede rv">Chaque partie de la veste a été pensée pour tenir dans le temps. Pas de gadget : une matière, une coupe, un logo.</p>
+  </div>
+  <div class="details">
+    <figure class="detail rv"><img src="detail-tissu.jpg" alt="Tissu bleu nuit effet mouillé avec zip argent" loading="lazy">
+      <figcaption><h3>Effet mouillé</h3><p>Tissu technique brillant, coupe-vent et déperlant. Le zip argent va du col à l'ourlet.</p></figcaption></figure>
+    <figure class="detail rv"><img src="detail-patch.jpg" alt="Patch rond en feutre orange brodé te" loading="lazy">
+      <figcaption><h3>Le patch te</h3><p>La boule TE en feutre, brodée et cousue sur la poitrine.</p></figcaption></figure>
+    <figure class="detail rv"><img src="detail-poignet.jpg" alt="Poignet côtelé de la manche sable" loading="lazy">
+      <figcaption><h3>Poignets côtelés</h3><p>Maille épaisse aux poignets et à la taille. La veste garde sa forme courte.</p></figcaption></figure>
+  </div>
+</section>
+
+<!-- COLLECTION -->
+<section class="sec wrap" id="collection" style="padding-top:0">
+  <div class="halo p" style="right:-25vw;top:20%"></div>
+  <div class="head">
+    <div class="rv"><p class="kicker">série 01</p><h2 class="title">La<br>collection</h2></div>
+    <p class="lede rv">Le reste de la série 01, avec le même patch et les mêmes couleurs. Tout se porte avec la veste.</p>
+  </div>
+  <div class="grid3">
+    <article class="prod rv"><span class="chip">Nouveau</span><span class="num">02</span>
+      <div class="media"><canvas class="cut" data-src="hoodie.mp4" width="640" height="360" role="img" aria-label="Hoodie Charbon qui tourne"></canvas></div>
+      <div class="prod-foot"><div><h3>Hoodie Charbon</h3><p>Coton épais · 89 €</p></div><button class="add" type="button" aria-label="Ajouter le hoodie">+</button></div></article>
+    <article class="prod rv"><span class="num">03</span>
+      <div class="media"><canvas class="cut" data-src="casquette.mp4" data-lo="13" data-hi="26" width="640" height="360" role="img" aria-label="Casquette Nuit qui tourne"></canvas></div>
+      <div class="prod-foot"><div><h3>Casquette Nuit</h3><p>Effet brillant · 39 €</p></div><button class="add" type="button" aria-label="Ajouter la casquette">+</button></div></article>
+    <article class="prod rv"><span class="num">04</span>
+      <div class="media"><canvas class="cut" data-src="tshirt.mp4" width="640" height="360" role="img" aria-label="T-shirt Délavé qui tourne"></canvas></div>
+      <div class="prod-foot"><div><h3>T-shirt Délavé</h3><p>Coupe large · 45 €</p></div><button class="add" type="button" aria-label="Ajouter le t-shirt">+</button></div></article>
+  </div>
+</section>
+
+<!-- LOOKBOOK -->
+<section class="sec wrap" id="lookbook" style="padding-top:0">
+  <div class="head">
+    <div class="rv"><p class="kicker">la nuit t'appartient</p><h2 class="title">Look<br>book</h2></div>
+    <p class="lede rv">La veste Armure 01 portée dehors, sous la pluie et sous les néons.</p>
+  </div>
+  <div class="look">
+    <figure class="shot wide rv"><video src="look-rue.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Mannequin en veste Armure 01 dans une rue de nuit"></video>
+      <figcaption><span>La rue, la nuit.</span><small>Coloris Nuit</small></figcaption></figure>
+    <div class="look-side">
+      <div class="quote rv"><p>Une veste qui se porte comme une <em>armure</em>.</p><a class="btn ghost" href="#piece">Je la veux</a></div>
+      <figure class="shot tall rv"><video src="look-parking.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Mannequin capuche relevée dans un parking"></video>
+        <figcaption><span>Sous-sol.</span><small>Capuche relevée</small></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPT -->
+<section class="sec wrap" id="concept" style="padding-top:0">
+  <div class="halo o" style="left:-10vw;top:0"></div>
+  <div class="concept">
+    <div class="ball-stage rv"><canvas class="cut" data-src="boule.mp4" data-lo="12" data-hi="26" width="640" height="360" role="img" aria-label="La boule TE en feutre qui tourne"></canvas></div>
+    <div class="rv">
+      <h2>Une boule,<br>deux lettres <em>et toi.</em></h2>
+      <p>La boule en feutre, c'est notre signature. Elle vient de la même famille que Temo et TeamElGhazi : on lui a juste retiré le visage et brodé « te » au milieu.</p>
+      <p>TE WEAR, ce sont des pièces en petite série, numérotées, pensées pour durer. On préfère faire peu, et bien.</p>
+      <div class="facts">
+        <div><b>300</b><span>pièces par série</span></div>
+        <div><b>4</b><span>pièces dans la série 01</span></div>
+        <div><b>30 j</b><span>pour changer d'avis</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LISTE D'ATTENTE -->
+<section class="wrap">
+  <div class="join rv">
+    <img class="ball-deco" src="logo.png" alt="">
+    <h2>La série 02<br>arrive.</h2>
+    <p>Laisse ton e-mail : tu seras prévenu avant tout le monde, avec 48 h d'avance sur la précommande.</p>
+    <form id="joinForm" novalidate>
+      <input id="joinEmail" type="email" placeholder="ton@email.com" aria-label="Ton adresse e-mail" autocomplete="email" required>
+      <button class="btn" type="submit">Me prévenir</button>
+    </form>
+    <p class="msg" id="joinMsg" role="status"></p>
+  </div>
+  <footer class="foot">
+    <a class="logo" href="#page"><img src="logo.png" alt="">TE WEAR</a>
+    <nav aria-label="Pied de page"><a href="#">Livraison</a><a href="#">Retours</a><a href="#">Guide des tailles</a><a href="#">Contact</a><a href="#">Mentions légales</a></nav>
+    <span>© 2026 TE WEAR · Une marque TeamElGhazi</span>
+  </footer>
+</section>
+</main>
+
+<script>
+// 1. Détourage en direct : le fond des vidéos est noir pur, les vêtements sont toujours plus clairs.
+const LO=5,HI=16;   // en dessous de LO : transparent ; au-dessus de HI : opaque
+function cutout(v,c){
+  const LOc=+(c.dataset.lo||LO),HIc=+(c.dataset.hi||HI);
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  let visible=true;
+  const paint=()=>{
+    if(v.readyState<2)return;
+    ctx.drawImage(v,0,0,c.width,c.height);
+    const img=ctx.getImageData(0,0,c.width,c.height),d=img.data;
+    for(let i=0;i<d.length;i+=4){
+      const m=Math.max(d[i],d[i+1],d[i+2]);
+      d[i+3]=m<=LOc?0:m>=HIc?255:((m-LOc)*255/(HIc-LOc))|0;
+    }
+    ctx.putImageData(img,0,0);
+  };
+  const loop=()=>{if(visible)paint();'requestVideoFrameCallback' in v?v.requestVideoFrameCallback(loop):requestAnimationFrame(loop)};
+  // On ne calcule que les vidéos à l'écran.
+  new IntersectionObserver(([e])=>{visible=e.isIntersecting;visible?v.play().catch(()=>{}):v.pause()},{rootMargin:'200px'}).observe(c);
+  v.addEventListener('loadeddata',()=>{v.play().catch(()=>{});paint()});
+  v.addEventListener('seeked',paint);
+  if(v.readyState>=2)paint();
+  loop();
+}
+function makeVideo(src){
+  const v=document.createElement('video');
+  v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=true;v.preload='auto';
+  v.setAttribute('muted','');v.setAttribute('playsinline','');v.src=src;
+  return v;
+}
+
+// 2. Glisser pour faire tourner (chaque vidéo fait un tour complet).
+function spin(el,v,onStart){
+  let down=false,x0=0,t0=0;
+  el.addEventListener('pointerdown',e=>{down=true;x0=e.clientX;t0=v.currentTime;v.pause();el.classList.add('drag');el.setPointerCapture(e.pointerId);onStart&&onStart()});
+  el.addEventListener('pointermove',e=>{
+    if(!down||!v.duration)return;
+    const turns=(e.clientX-x0)/el.clientWidth*1.4;
+    let t=(t0-turns*v.duration)%v.duration;if(t<0)t+=v.duration;
+    v.currentTime=t;
+  });
+  const up=()=>{if(!down)return;down=false;el.classList.remove('drag');v.play().catch(()=>{})};
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+}
+
+const heroV=document.getElementById('vid');
+cutout(heroV,document.getElementById('cv'));
+spin(document.getElementById('jacket'),heroV,()=>document.getElementById('hint').style.opacity=0);
+
+const videos={};
+document.querySelectorAll('canvas.cut[data-src]').forEach(c=>{
+  const v=makeVideo(c.dataset.src);videos[c.id||c.dataset.src]=v;cutout(v,c);
+  if(c.hasAttribute('data-drag'))spin(c,v);
+});
+
+// 3. Coloris et tailles de la veste.
+(()=>{
+  const v=videos.pieceCut,name=document.getElementById('colorName');
+  document.querySelectorAll('.sw').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.sw').forEach(x=>x.setAttribute('aria-pressed',x===b));
+    name.textContent=b.dataset.name;
+    const t=v.currentTime;v.src=b.dataset.src;
+    v.addEventListener('loadeddata',()=>{v.currentTime=t;v.play().catch(()=>{})},{once:true});
+  }));
+  const sizeName=document.getElementById('sizeName');
+  document.querySelectorAll('.size').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.size').forEach(x=>x.setAttribute('aria-pressed',x===b));
+    sizeName.textContent=b.textContent;
+  }));
+  const pre=document.getElementById('preorder');
+  pre.addEventListener('click',()=>{pre.textContent=`Réservée · ${name.textContent} · ${sizeName.textContent}`});
+  document.querySelectorAll('.prod .add').forEach(b=>b.addEventListener('click',()=>{b.classList.toggle('ok');b.textContent=b.classList.contains('ok')?'✓':'+'}));
+})();
+
+// 4. Liste d'attente (pas encore reliée à un service d'e-mails).
+document.getElementById('joinForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const input=document.getElementById('joinEmail'),msg=document.getElementById('joinMsg');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)){msg.textContent="Cette adresse e-mail n'est pas valide. Vérifie-la et réessaie.";input.focus();return}
+  msg.textContent="C'est noté : tu seras prévenu en premier.";input.value='';
+});
+
+// Menu flottant : visible dès qu'on a quitté le hero.
+(()=>{
+  const bar=document.getElementById('topbar'),hero=document.getElementById('page');
+  new IntersectionObserver(([e])=>{
+    const on=!e.isIntersecting;bar.classList.toggle('show',on);bar.setAttribute('aria-hidden',!on);
+    bar.querySelectorAll('a').forEach(a=>a.tabIndex=on?0:-1);
+  },{threshold:.15}).observe(hero);
+})();
+
+// 5. Apparition des blocs au défilement.
+(()=>{
+  const els=document.querySelectorAll('.rv');
+  if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));return}
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+  els.forEach(e=>io.observe(e));
+})();
+
+// 6. Profondeur dans le hero : la veste suit un peu la souris, le grand mot moins, le projecteur suit le pointeur.
+(()=>{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||matchMedia('(max-width:820px)').matches)return;
+  const page=document.getElementById('page'),j=document.getElementById('jacket'),g=document.getElementById('giant');
+  let tx=0,ty=0,x=0,y=0;
+  page.addEventListener('pointermove',e=>{const r=page.getBoundingClientRect();tx=(e.clientX-r.left)/r.width-.5;ty=(e.clientY-r.top)/r.height-.5});
+  page.addEventListener('pointerleave',()=>{tx=ty=0});
+  (function tick(){x+=(tx-x)*.06;y+=(ty-y)*.06;
+    j.style.transform=`translateX(calc(-50% + ${x*30}px)) translateY(${y*18}px) rotate(${x*2.5}deg)`;
+    g.style.translate=`${x*-12}px ${y*-6}px`;
+    page.style.setProperty('--mx',(52+x*14)+'%');page.style.setProperty('--my',(62+y*10)+'%');
+    requestAnimationFrame(tick)})();
+})();
+</script>
+</body>
+</html>
